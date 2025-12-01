@@ -13,23 +13,29 @@ import MapKit
 struct LocationsView: View {
     
     @EnvironmentObject private var vm : LocationsViewModel
+    let maxWidthForIpad: CGFloat = 700
+    
     
     var body: some View {
-        
         ZStack {
             mapLayer
                 .ignoresSafeArea()
-            
             VStack(spacing:  0) {
                 header
                     .padding()
+                    .frame(maxWidth: maxWidthForIpad)
                 Spacer()
                 locationPreviewStack
             }
         }
         // identfiable being "looped" or iterated is the optional location binded
         .sheet(item: $vm.sheetLocation, onDismiss: nil) { location in
-            LocationDetailView(location: location)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                LocationDetailView(location: location)
+                    .frame(height: UIScreen.main.bounds.height * 0.75)
+            } else {
+                LocationDetailView(location: location)
+            }
         }
     }
 }
@@ -47,13 +53,13 @@ extension LocationsView {
     private var header : some View { //type View
         
         VStack {
-            Text(vm.mapLocation.name + ", " + vm.mapLocation.cityName)
+            Text(vm.currentMapLocation.name + ", " + vm.currentMapLocation.cityName)
                 .font(.title2)
                 .fontWeight(.black)
                 .foregroundStyle(.primary)
                 .frame(height: 55)
                 .frame(maxWidth: .infinity)
-                .animation(.none, value: vm.mapLocation)
+                .animation(.none, value: vm.currentMapLocation)
                 .overlay(alignment: .leading) {
                     Image(systemName: "arrow.down")
                         .font(.headline)
@@ -88,7 +94,7 @@ extension LocationsView {
             MapAnnotation(coordinate: location.coordinates) {
                 // sets / puts annotation for eacch item in collection
                 LocationMapAnnotationView()
-                    .scaleEffect(vm.mapLocation == location ? 1 : 0.7) //current location
+                    .scaleEffect(vm.currentMapLocation == location ? 1 : 0.7) //current location
                     .shadow(color: .black.opacity(0.5), radius: 10)
                 // on tap we run func to set current location = location iterated (from annoatationItems)
                     .onTapGesture {
@@ -105,10 +111,12 @@ extension LocationsView {
         
         ZStack {
             ForEach(vm.locations) { location in // for every location in the locations collection... now we can use that location (in white) in the code
-                if vm.mapLocation == location {
+                if vm.currentMapLocation == location {
                     LocationPreviewView(location: location)
                         .shadow(color: .black.opacity(0.3), radius: 20)
                         .padding()
+                        .frame(maxWidth: maxWidthForIpad)
+                        .frame(maxWidth: .infinity)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing),
                             removal: .move(edge: .leading)))

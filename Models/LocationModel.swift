@@ -30,9 +30,6 @@ struct LocationModel: Identifiable, Equatable {
     // custom init to allow for 2 inits (one that we can ass in ID to update if needed)
     
     
-    
-    
-    
     //update func
     
     

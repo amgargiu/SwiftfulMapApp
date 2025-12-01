@@ -16,9 +16,9 @@ class LocationsViewModel: ObservableObject {
     @Published var locations : [LocationModel]
     
     //Current location on the map
-    @Published var mapLocation: LocationModel {
+    @Published var currentMapLocation: LocationModel {
         didSet{
-            updateMapRegion(location: mapLocation) // pass in current map location - func will set mapRegion to location's coordinates
+            updateMapRegion(location: currentMapLocation) // pass in current map location - func will set mapRegion to location's coordinates
         }
     }
     
@@ -39,9 +39,9 @@ class LocationsViewModel: ObservableObject {
         //get data and set to locations array
         let locations = LocationsDataService.locations
         self.locations = locations
-        //setting the maplocation to first upon init
-        self.mapLocation = locations.first!
-        //calling function where
+        //setting the currentMapLocation to first upon init
+        self.currentMapLocation = locations.first! // .first returns a single instance of type LocationModel in locations array
+        //calling function where - setting up the value for the mapRegion (needed for Map call in View)
         self.updateMapRegion(location: locations.first!)
     }
     
@@ -49,7 +49,7 @@ class LocationsViewModel: ObservableObject {
     private func updateMapRegion(location: LocationModel) {
         withAnimation(.easeInOut){
             mapRegion = MKCoordinateRegion(
-                center: location.coordinates, //remeber these are CLLLocationCoordinate2D data type
+                center: location.coordinates, //remeber these are CLLocationCoordinate2D data type
                 span: mapSpan)
         }
     }
@@ -64,9 +64,9 @@ class LocationsViewModel: ObservableObject {
     
     func showClickedLocation(location: LocationModel) { //he called this showNextLocation func
         withAnimation(.easeInOut){
-            mapLocation = location
+            currentMapLocation = location
             // QUESTION: this refrences the location beng passed in - how does it now we passed in the location we clicked on tho?!
-            // Answer: Because in the MenuView - we haeva forEach controlling the view for each row - the foreach references each Row as a "location in" when looping - we can use that "location" and pass it in as the location to run this function!
+            // Answer: Because in the MenuView - we have forEach controlling the view for each row - the foreach references each Row as a "location in" when looping - we can use that "location" and pass it in as the location to run this function!
             showLocationsMenu = false
         }
     }
@@ -75,7 +75,7 @@ class LocationsViewModel: ObservableObject {
     func nextButtonPressed() {
         //current location is map location - so get index of that then + 1
         //unwrapping with guard since using .first
-        guard let currentIndex = locations.firstIndex(where: { $0.id == mapLocation.id }) else {
+        guard let currentIndex = locations.firstIndex(where: { $0.id == currentMapLocation.id }) else {
             print("can't find current index in locations array - location non existant")
             return // return out of guards
         }
