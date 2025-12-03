@@ -111,7 +111,7 @@ extension LocationsView {
         
         ZStack {
             ForEach(vm.locations) { location in // for every location in the locations collection... now we can use that location (in white) in the code
-                if vm.currentMapLocation == location {
+                if vm.currentMapLocation == location { // one at a time
                     LocationPreviewView(location: location)
                         .shadow(color: .black.opacity(0.3), radius: 20)
                         .padding()

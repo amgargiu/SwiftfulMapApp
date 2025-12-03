@@ -65,8 +65,6 @@ class LocationsViewModel: ObservableObject {
     func showClickedLocation(location: LocationModel) { //he called this showNextLocation func
         withAnimation(.easeInOut){
             currentMapLocation = location
-            // QUESTION: this refrences the location beng passed in - how does it now we passed in the location we clicked on tho?!
-            // Answer: Because in the MenuView - we have forEach controlling the view for each row - the foreach references each Row as a "location in" when looping - we can use that "location" and pass it in as the location to run this function!
             showLocationsMenu = false
         }
     }
